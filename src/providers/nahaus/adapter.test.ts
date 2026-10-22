@@ -105,3 +105,20 @@ test("stops before exceeding the monthly request budget", async () => {
   assert.equal(calls.length, 3);
   assert.equal(adapter.getUsage().count, 3);
 });
+
+test("onRequest reports every request with the running usage count", async () => {
+  const seen: string[] = [];
+  const calls: string[] = [];
+  const adapter = new NahausAdapter({
+    email: "x@example.com", password: "pw", now: () => NOW,
+    onRequest: ({ method, path, usage }) => seen.push(`${method} ${path} ${usage.count}`),
+    fetch: (async (url: string) => {
+      const path = new URL(url).pathname;
+      calls.push(path);
+      const body = path.endsWith("/login") ? { idToken: "t", expiresIn: "3600" } : { data: [], nextCursor: null };
+      return new Response(JSON.stringify(body));
+    }) as typeof fetch,
+  });
+  await adapter.getRecipientByEmail("a@example.com");
+  assert.deepEqual(seen, ["POST /api-auth/login 1", "GET /landlords?limit=100 2"]);
+});

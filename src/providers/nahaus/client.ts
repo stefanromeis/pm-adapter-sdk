@@ -33,6 +33,8 @@ export interface NahausClientConfig {
   monthlyBudget?: number;
   /** Called once per month when 80% of the budget is used. Defaults to console.warn. */
   onBudgetWarning?: (usage: NahausUsage) => void;
+  /** Called for every request sent to Nahaus (logins included), e.g. for logging usage. */
+  onRequest?: (info: { method: "GET" | "POST"; path: string; usage: NahausUsage }) => void;
   fetch?: typeof fetch;
   now?: () => number;
 }
@@ -90,7 +92,7 @@ export class NahausClient {
   async get<T>(path: string): Promise<T> {
     for (let attempt = 0; ; attempt++) {
       const token = await this.getToken();
-      this.countRequest();
+      this.countRequest("GET", path);
       const res = await this.fetchFn(`${this.baseUrl}/api-v2${path}`, {
         method: "GET",
         headers: { Authorization: `Bearer ${token}` },
@@ -114,7 +116,7 @@ export class NahausClient {
   }
 
   private async login(): Promise<string> {
-    this.countRequest();
+    this.countRequest("POST", "/api-auth/login");
     const res = await this.fetchFn(`${this.baseUrl}/api-auth/login`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -136,12 +138,13 @@ export class NahausClient {
     if (this.usage.month !== month) this.usage = { month, count: 0, warned: false };
   }
 
-  private countRequest(): void {
+  private countRequest(method: "GET" | "POST", path: string): void {
     this.rollMonth();
     if (this.usage.count >= this.budget) {
       throw new NahausBudgetExceededError(this.usage.count, this.budget);
     }
     this.usage.count++;
+    this.config.onRequest?.({ method, path, usage: this.getUsage() });
 
     if (!this.usage.warned && this.usage.count >= this.budget * 0.8) {
       this.usage.warned = true;
