@@ -1,0 +1,27 @@
+{
+  "name": "pm-adapter-sdk",
+  "version": "0.1.0",
+  "description": "Read-only adapter interface and reference adapters for connecting property management systems",
+  "license": "MIT",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": ["dist", "README.md", "LICENSE"],
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "dev": "tsc -p tsconfig.build.json --watch",
+    "typecheck": "tsc --noEmit",
+    "test": "tsx --test src/*.test.ts src/providers/nahaus/*.test.ts"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.18",
+    "tsx": "^4.19.0",
+    "typescript": "^5.5.4"
+  }
+}
