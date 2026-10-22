@@ -80,6 +80,11 @@ pnpm test
 pnpm build
 ```
 
+## Contributing
+
+This repository is a read-only mirror of a package maintained inside a larger
+monorepo. Issues and ideas are welcome; pull requests are ported over manually.
+
 ## License
 
 MIT

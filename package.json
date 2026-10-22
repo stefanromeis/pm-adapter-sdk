@@ -3,6 +3,17 @@
   "version": "0.1.0",
   "description": "Read-only adapter interface and reference adapters for connecting property management systems",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/stefanromeis/pm-adapter-sdk.git"
+  },
+  "homepage": "https://github.com/stefanromeis/pm-adapter-sdk#readme",
+  "keywords": [
+    "property-management",
+    "adapter",
+    "sdk",
+    "real-estate"
+  ],
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -12,7 +23,11 @@
       "import": "./dist/index.js"
     }
   },
-  "files": ["dist", "README.md", "LICENSE"],
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
     "dev": "tsc -p tsconfig.build.json --watch",
